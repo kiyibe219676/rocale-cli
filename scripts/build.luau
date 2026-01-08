@@ -21,9 +21,11 @@ end
 
 log.info("Version: " .. version)
 log.info("Commit Hash: " .. hash)
-fs.writestringtofile("src/version.luau", `return \{ version="{version}", hash="{hash}" \}`)
+
+local versionFile = fs.open("src/version.luau", "w+")
+fs.write(versionFile, `return \{ version="{version}", hash="{hash}" \}`)
+fs.close(versionFile)
 
 log.info("Building rocale-cli...")
-runProcess({ "darklua", "process", "src/cli.luau", "build/cli.luau" }) -- Remove when lute compile supports aliases
-runProcess({ "lute", "compile", "build/cli.luau", "--output", output_path, "--show-require-graph" })
+runProcess({ "lute", "compile", "src/cli.luau", "--output", output_path, "--show-require-graph", "--bundle-stats" })
 log.info("Build complete: " .. output_path)
